@@ -275,7 +275,11 @@ app.layout = dbc.Container([
         ),
     ], className="g-3", style={"marginBottom": "40px"}),
 
-], fluid=True, style={"backgroundColor": COLOR_BACKGROUND, "paddingBottom": "40px"})
+], fluid=True, style={
+    "background": "linear-gradient(180deg, #f7f7f7 0%, #ececec 100%)",
+    "minHeight": "100vh",
+    "paddingBottom": "40px"
+})
 
 
 # -----------------------
