@@ -100,20 +100,39 @@ def create_kpi_card(title, default_value, value_id, accent_color, tooltip_text):
 # -----------------------
 app.layout = dbc.Container([
 
-    # NAVBAR
+
+# NAVBAR
 dbc.Navbar(
     dbc.Container([
         html.Div(),  # empty left side
-        dbc.Nav([
-            dbc.NavItem(dbc.NavLink("Live Demo", href="#", external_link=True)),
-            dbc.NavItem(dbc.NavLink("GitHub", href="#", external_link=True)),
-        ], navbar=True)
+        dbc.Nav(
+            [
+                dbc.NavItem(
+                    dbc.NavLink(
+                        "Project Page",
+                        href="https://lida-gheidary.github.io/Portfolio/index.html#projects",
+                        external_link=True,
+                        target="_blank",
+                    )
+                ),
+                dbc.NavItem(
+                    dbc.NavLink(
+                        "GitHub",
+                        href="https://github.com/Lida-Gheidary/Customer-analytics-dashboard",
+                        external_link=True,
+                        target="_blank",
+                    )
+                ),
+            ],
+            navbar=True,
+        ),
     ]),
     color="white",
     dark=False,
     className="mb-3",
-    style={"borderBottom": "1px solid #EAEAEA"}
+    style={"borderBottom": "1px solid #EAEAEA"},
 ),
+
 
 # HERO HEADER (light grey gradient + white text)
 html.Div(
