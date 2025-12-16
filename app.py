@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State, ctx
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
@@ -94,34 +94,31 @@ def create_kpi_card(title, default_value, value_id, accent_color, tooltip_text):
 app.layout = dbc.Container([
 
     # NAVBAR
-    dbc.Navbar(
-        dbc.Container([
-            dbc.NavbarBrand("Customer Analytics", style={
-                "fontFamily": FONT_FAMILY,
-                "fontWeight": "800",
-                "letterSpacing": "0.3px"
-            }),
-            dbc.Nav([
-                dbc.NavItem(dbc.NavLink("Live Demo", href="#", external_link=True)),
-                dbc.NavItem(dbc.NavLink("GitHub", href="#", external_link=True)),
-            ], navbar=True)
-        ]),
-        color="white",
-        dark=False,
-        className="mb-3",
-        style={"borderBottom": "1px solid #EAEAEA"}
-    ),
+dbc.Navbar(
+    dbc.Container([
+        html.Div(),  # empty left side
+        dbc.Nav([
+            dbc.NavItem(dbc.NavLink("Live Demo", href="#", external_link=True)),
+            dbc.NavItem(dbc.NavLink("GitHub", href="#", external_link=True)),
+        ], navbar=True)
+    ]),
+    color="white",
+    dark=False,
+    className="mb-3",
+    style={"borderBottom": "1px solid #EAEAEA"}
+),
 
-    # HERO HEADER (gradient + white text)
-    html.Div([
+# HERO HEADER (light grey gradient + white text)
+html.Div(
+    [
         html.H1(
             "Customer Analytics Dashboard",
             style={
                 "fontFamily": FONT_FAMILY,
                 "fontWeight": "900",
                 "color": "white",
-                "marginBottom": "6px"
-            }
+                "marginBottom": "6px",
+            },
         ),
         html.Div(
             "Insurance Marketing Performance Analysis",
@@ -129,16 +126,48 @@ app.layout = dbc.Container([
                 "fontFamily": FONT_FAMILY,
                 "color": "rgba(255,255,255,0.85)",
                 "fontSize": "14px",
-                "letterSpacing": "0.4px"
-            }
-        )
-    ], style={
+                "letterSpacing": "0.4px",
+            },
+        ),
+    ],
+    style={
         "textAlign": "center",
         "padding": "34px 18px",
         "borderRadius": "14px",
         "marginBottom": "22px",
-        "background": "linear-gradient(135deg, #000000, #2b2b2b)"
-    }),
+        "backgroundColor": "#6a6a6a",
+        "backgroundImage": (
+            "linear-gradient(135deg, #9a9a9a 0%, #6a6a6a 50%, #7f7f7f 100%), "
+            "radial-gradient(circle at 25% 20%, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 60%)"
+        ),
+        "backgroundRepeat": "no-repeat",
+        "backgroundSize": "cover",
+    },
+),
+# CONTEXT / DATASET EXPLANATION
+dbc.Card(
+    dbc.CardBody([
+        html.H5("Context", style={"fontFamily": FONT_FAMILY, "fontWeight": "900", "marginBottom": "10px"}),
+        html.P(
+            "This dashboard uses a public IBM Watson insurance customer dataset for marketing/CRM analytics practice. "
+            "It includes customer segments, policy attributes, monthly premium (monthly revenue), estimated CLV, and a "
+            "campaign outcome field (Response).",
+            style={"fontFamily": FONT_FAMILY, "color": COLOR_SECONDARY, "marginBottom": "8px"}
+        ),
+        html.P(
+            "Response = Yes means the customer took the campaign’s intended action (e.g., accepted the offer/renewed). "
+            "Response = No means they did not.",
+            style={"fontFamily": FONT_FAMILY, "color": COLOR_SECONDARY, "marginBottom": "0px"}
+        ),
+    ]),
+    style={
+        "border": "none",
+        "borderRadius": "12px",
+        "backgroundColor": "#FFFFFF",
+        "boxShadow": "0 2px 12px rgba(0,0,0,0.06)",
+        "marginBottom": "12px"
+    }
+),
 
     # FILTERS
     dbc.Card(
@@ -280,6 +309,7 @@ app.layout = dbc.Container([
     "minHeight": "100vh",
     "paddingBottom": "40px"
 })
+
 
 
 # -----------------------
@@ -437,14 +467,17 @@ def update_dashboard(selected_channel, selected_policy, selected_coverage):
 @app.callback(
     Output("download-csv", "data"),
     Input("btn-download-csv", "n_clicks"),
-    Input("sales-channel-dropdown", "value"),
-    Input("policy-type-dropdown", "value"),
-    Input("coverage-dropdown", "value"),
+    State("sales-channel-dropdown", "value"),
+    State("policy-type-dropdown", "value"),
+    State("coverage-dropdown", "value"),
     prevent_initial_call=True
 )
 def download_filtered_csv(n_clicks, selected_channel, selected_policy, selected_coverage):
-    filtered_df = df.copy()
+    # Only download when the button is what triggered the callback
+    if ctx.triggered_id != "btn-download-csv":
+        return dash.no_update
 
+    filtered_df = df.copy()
     if selected_channel != "All":
         filtered_df = filtered_df[filtered_df["Sales Channel"] == selected_channel]
     if selected_policy != "All":
@@ -453,7 +486,6 @@ def download_filtered_csv(n_clicks, selected_channel, selected_policy, selected_
         filtered_df = filtered_df[filtered_df["Coverage"] == selected_coverage]
 
     return dcc.send_data_frame(filtered_df.to_csv, "filtered_customers.csv", index=False)
-
 
 # -----------------------
 # Run
