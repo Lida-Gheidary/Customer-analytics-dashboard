@@ -1,3 +1,5 @@
+import os
+
 import dash
 from dash import dcc, html, Input, Output, State, ctx
 import dash_bootstrap_components as dbc
@@ -6,14 +8,17 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # -----------------------
-# Data
+# Data (safe path on Render)
 # -----------------------
-df = pd.read_csv("WA_Fn-UseC_-Marketing-Customer-Value-Analysis.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "WA_Fn-UseC_-Marketing-Customer-Value-Analysis.csv")
+df = pd.read_csv(DATA_PATH)
 
 # -----------------------
 # App
 # -----------------------
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 # -----------------------
 # Style constants
