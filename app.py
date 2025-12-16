@@ -7,12 +7,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 
+
 # -----------------------
 # Data (safe path on Render)
 # -----------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "WA_Fn-UseC_-Marketing-Customer-Value-Analysis.csv")
 df = pd.read_csv(DATA_PATH)
+
 
 # -----------------------
 # App
